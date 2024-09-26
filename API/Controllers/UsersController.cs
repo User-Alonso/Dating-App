@@ -1,8 +1,8 @@
 using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
-using Microsoft.EntityFrameworkCore;
 [ApiController]
 [Route("api/v1/[controller]")]
 public class UsersController : ControllerBase
@@ -13,24 +13,16 @@ public class UsersController : ControllerBase
         _context = context;
     }
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsersAsync()
+    public ActionResult<IEnumerable<AppUser>> GetUsers()
     {
-        var users = await _context.Users.ToListAsync();
-
+        var users = _context.Users.ToList();
         return users;
     }
-    [HttpGet("{id:int}")] // api/v1/users/2
-    public async Task<ActionResult<AppUser>> GetUsersByIdAsync(int id)
+    [HttpGet("{id}")] // api/v1/users/2
+    public ActionResult<AppUser> GetUsersById(int id)
     {
-      var user = await _context.Users.FindAsync(id);
-
+        var user = _context.Users.Find(id);
         if (user == null) return NotFound();
         return user;
-    }
-     
-    [HttpGet("{name}")] // api/v1/users/Calamardo
-    public ActionResult<string> Ready(string name)
-    {
-        return $"Hi {name}";
     }
 }
