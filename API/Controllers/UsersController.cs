@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 [ApiController]
-[Route("api/v1/[controller]")]
-public class UsersController : ControllerBase
-{
+[Route("api/[controller]")]
+public class UsersController : BaseApiController{
     private readonly DataContext _context;
     public UsersController(DataContext context)
     {
