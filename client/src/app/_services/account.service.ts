@@ -1,39 +1,38 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Observable, map } from 'rxjs';
-import { User } from '../_models/user';
+import { map, Observable, take } from 'rxjs';
+import { User } from '../models/user';
+import { environment } from '../../environments/environment';
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AccountService {
   private http = inject(HttpClient);
-  baseUrl = 'http://localhost:5000/api/';
+  baseUrl = environment.apiUrl;
   currentUser = signal<User | null>(null);
 
-  login(model: any): Observable<User | void> {
-    return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
-      map((user) => {
-        if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.currentUser.set(user);
-        }
-      })
-    );
+  login(model: any):Observable <User | void >{
+    return this.http.post<User>(this.baseUrl + "account/login", model).pipe(map(user => {
+      if(user){
+        localStorage.setItem("user",JSON.stringify(user));
+        this.currentUser.set(user);
+      }
+    }));
   }
+  register(model: any):Observable <User | void >{
+    return this.http.post<User>(this.baseUrl + "account/register", model).pipe(map(user => {
+      if(user){
+        localStorage.setItem("user",JSON.stringify(user));
+        this.currentUser.set(user);
+        
+      }
+      return user;
+    }));
 
-  register(model: any): Observable<User | void> {
-    return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
-      map((user) => {
-        if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.currentUser.set(user);
-        }
-        return user;
-      })
-    );
   }
-  logout(): void {
-    localStorage.removeItem('user');
+  logout(){
+    localStorage.removeItem("user");
     this.currentUser.set(null);
   }
 }

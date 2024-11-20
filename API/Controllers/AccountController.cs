@@ -1,15 +1,15 @@
+namespace API.Controllers;
 using System.Security.Cryptography;
 using System.Text;
 using API.Data;
 using API.DTOs;
-using API.Entities;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers;
-
-public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
+public class AccountController(
+    DataContext context,
+    ITokenService tokenService) : BaseApiController
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserResponse>> RegisterAsync(RegisterRequest request)
@@ -18,14 +18,15 @@ public class AccountController(DataContext context, ITokenService tokenService) 
         {
             return BadRequest("Username already in use");
         }
-
-        using var hmac = new HMACSHA512();
+        return Ok();
+        /*using var hmac = new HMACSHA512();
         var user = new AppUser
         {
             UserName = request.Username,
             PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
             PasswordSalt = hmac.Key
-        };
+            
+     
 
         context.Users.Add(user);
         await context.SaveChangesAsync();
@@ -35,21 +36,29 @@ public class AccountController(DataContext context, ITokenService tokenService) 
             Username = user.UserName,
             Token = tokenService.CreateToken(user)
         };
+           };*/
+           
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<UserResponse>> LoginAsync(LoginRequest request)
     {
-        var user = await context.Users.FirstOrDefaultAsync(x =>
-            x.UserName.ToLower() == request.Username.ToLower());
+        var user = await context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == request.Username.ToLower());
         if (user == null)
+        {
             return Unauthorized("Invalid username or password");
+        }
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
         var computeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
-        for (int i = 0; i < computeHash.Length; i++)
+
+        for (var i = 0; i < computeHash.Length; i++)
+        {
             if (computeHash[i] != user.PasswordHash[i])
+            {
                 return Unauthorized("Invalid username or password");
+            }
+        }
 
         return new UserResponse
         {

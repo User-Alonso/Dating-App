@@ -1,38 +1,45 @@
+namespace API;
+
 using API.Data;
-using API.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using API.Extensions;
-
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddIdentityServices(builder.Configuration);
-
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(opt =>
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+  [ExcludeFromCodeCoverage]
+public class Program
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+    public static async Task Main(string[] args)
+    {
+        var host = CreateHostBuilder(args).Build();
+        using var scope = host.Services.CreateScope();
+        var services = scope.ServiceProvider;
 
-builder.Services.AddCors();
-builder.Services.AddScoped<ITokenService, TokenService>();
+        try
+        {
+            var context = services.GetRequiredService<DataContext>();
+            // var userManager = services.GetRequiredService<UserManager<AppUser>>();
+            // var roleManger = services.GetRequiredService<RoleManager<AppRole>>();
 
+            await context.Database.MigrateAsync();
+            await Seed.SeedUsersAsync(context); // (userManager, roleManger);
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error has ocurred during migration/seeding");
+        }
 
+        await host.RunAsync();
+    }
 
-//Configure the HTTP request pipeline 
-var app = builder.Build();
-
-
-
-app.UseCors((cors) => cors.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
+}
