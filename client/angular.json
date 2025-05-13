@@ -25,13 +25,13 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/font-awesome/css/font-awesome.min.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/ngx-spinner/animations/fire.css",
-                    "node_modules/ngx-toastr/toastr.css",
-                    "../node_modules/bootswatch/dist/United/bootstrap.min.css",
+              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "./node_modules/font-awesome/css/font-awesome.min.css",
+              "./node_modules/bootswatch/dist/United/bootstrap.min.css",
+              "./node_modules/ngx-spinner/animations/fire.css",
+              "./node_modules/ngx-toastr/toastr.css",
               "src/styles.css"
-              
             ],
             "scripts": []
           },
@@ -67,9 +67,9 @@
         },
         "serve": {
           "options": {
-            "ssl":true,
-            "sslCert":"ssl/localhost.pem",
-            "sslKey":"ssl/localhost-key.pem"
+            "ssl": true,
+            "sslCert": "./ssl/localhost.pem",
+            "sslKey": "./ssl/localhost-key.pem"
           },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
@@ -110,6 +110,6 @@
     }
   },
   "cli": {
-    "analytics": "b90798f2-10b5-4e36-ad74-8cc8f65a56b9"
+    "analytics": false
   }
 }

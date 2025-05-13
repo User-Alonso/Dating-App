@@ -1,4 +1,5 @@
 namespace API.DTOs;
+
 public class MemberResponse
 {
     public int Id { get; set; }

@@ -1,7 +1,7 @@
 namespace API.UnitTests;
 
 using API.Data;
-using API.Entities;
+using API.DataEntities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -61,7 +61,8 @@ public class APIWebApplicationFactory<IStartup> : WebApplicationFactory<Startup>
                     try
                     {
                         await context.Database.MigrateAsync();
-                        await Seed.SeedUsersAsync(context);
+                        // await Seed.SeedUsersAsync(context);
+                        __loadTestData(context);
                     }
                     catch (Exception ex)
                     {
